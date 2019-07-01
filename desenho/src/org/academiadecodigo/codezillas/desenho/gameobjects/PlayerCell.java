@@ -21,6 +21,7 @@ public class PlayerCell implements KeyboardHandler {
     private GridDirection currentDirection;
     private Cell[][] cells;
     private Color color;
+    private final int SPEED = 1;
 
     public PlayerCell(GridPosition pos, Cell[][] cells) {
         color = Color.BLACK;
@@ -89,16 +90,12 @@ public class PlayerCell implements KeyboardHandler {
         blackColor.setKey(KeyboardEvent.KEY_2);
         blackColor.setKeyboardEventType(KeyboardEventType.KEY_PRESSED);
 
-        keyboard.addEventListener(down);
-        keyboard.addEventListener(up);
-        keyboard.addEventListener(right);
-        keyboard.addEventListener(left);
-        keyboard.addEventListener(space);
-        keyboard.addEventListener(save);
-        keyboard.addEventListener(clear);
-        keyboard.addEventListener(load);
-        keyboard.addEventListener(redColor);
-        keyboard.addEventListener(blackColor);
+        KeyboardEvent[] keyboardEvents = {down, up, right, left, space, save, clear, load, redColor, blackColor};
+
+        for (KeyboardEvent k : keyboardEvents) {
+            keyboard.addEventListener(k);
+        }
+
     }
 
     public void setGrid(Grid grid) {
@@ -109,33 +106,34 @@ public class PlayerCell implements KeyboardHandler {
         return pos;
     }
 
-    public void accelerate(GridDirection direction, int speed) {
+    private void accelerate(GridDirection direction, int speed) {
         this.currentDirection = direction;
-        pos.moveInDirection(direction, 1);
+        pos.moveInDirection(direction, speed);
     }
 
     private void checkCells(){
         if (cells[pos.getCol()][pos.getRow()].getPos().isPainted()){
             list.remove(cells[pos.getCol()][pos.getRow()]);
             cells[pos.getCol()][pos.getRow()].getPos().setColor(Color.BLACK);
-            cells[pos.getCol()][pos.getRow()].getPos().show();
+            cells[pos.getCol()][pos.getRow()].getPos().erase();
             return;
         }
         list.add(cells[pos.getCol()][pos.getRow()]);
         cells[pos.getCol()][pos.getRow()].getPos().setColor(color);
-        cells[pos.getCol()][pos.getRow()].getPos().showP();
+        cells[pos.getCol()][pos.getRow()].getPos().paint();
 
     }
 
     private void clearCells(){
 
         while (!list.isEmpty()){
-            list.element().getPos().show();
+            list.element().getPos().setColor(Color.BLACK);
+            list.element().getPos().erase();
             list.remove();
         }
     }
 
-    public void readFile(){
+    private void readFile(){
 
         try {
 
@@ -150,12 +148,12 @@ public class PlayerCell implements KeyboardHandler {
                 String[] values = line.split("");
 
                 for (int i = 0; i < grid.getCols(); i++) {
-                    if (values == null){return;}
                     if (values[i].equals("0")){
-                        cells[i][lines].getPos().show();
+                        cells[i][lines].getPos().erase();
                         continue;
                     }
-                    cells[i][lines].getPos().showP();
+                    list.add(cells[i][lines]);
+                    cells[i][lines].getPos().paint();
                 }
 
                 lines++;
@@ -178,18 +176,16 @@ public class PlayerCell implements KeyboardHandler {
             FileWriter fileWriter = new FileWriter("teste.txt");
             BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
 
-            String line = "";
-            int lines = 0;
-
+            StringBuilder sb = new StringBuilder();
 
             for (int i = 0; i < grid.getRows(); i++) {
                 for (int j = 0; j < grid.getCols(); j++) {
-                    line += cellContent(j,i);
+                    sb.append(cellContent(j,i));
                 }
-                line+="\n";
+                sb.append("\n");
             }
 
-            bufferedWriter.write(line);
+            bufferedWriter.write(sb.toString(), 0, sb.length());
             bufferedWriter.flush();
             bufferedWriter.close();
 
@@ -204,20 +200,20 @@ public class PlayerCell implements KeyboardHandler {
 
         switch (key){
             case KeyboardEvent.KEY_LEFT:
-                accelerate(GridDirection.LEFT, 1);
+                accelerate(GridDirection.LEFT, SPEED);
                 currentDirection = GridDirection.LEFT;
                 break;
             case KeyboardEvent.KEY_RIGHT:
                 currentDirection = GridDirection.RIGHT;
-                accelerate(GridDirection.RIGHT, 1);
+                accelerate(GridDirection.RIGHT, SPEED);
                 break;
             case KeyboardEvent.KEY_UP:
                 currentDirection = GridDirection.UP;
-                accelerate(GridDirection.UP, 1);
+                accelerate(GridDirection.UP, SPEED);
                 break;
             case KeyboardEvent.KEY_DOWN:
                 currentDirection = GridDirection.DOWN;
-                accelerate(GridDirection.DOWN, 1);
+                accelerate(GridDirection.DOWN, SPEED);
                 break;
             case KeyboardEvent.KEY_SPACE:
                 checkCells();
