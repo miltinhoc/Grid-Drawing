@@ -5,13 +5,13 @@ import org.academiadecodigo.simplegraphics.graphics.Rectangle;
 
 public class GridPosition {
 
-    Grid grid;
-    Rectangle rectangle;
+    private Grid grid;
+    private Rectangle rectangle;
     private int col;
     private int row;
     private boolean painted;
 
-    public GridPosition(Grid grid, int col, int row) {
+    GridPosition(Grid grid, int col, int row) {
         this.grid = grid;
         this.col = col;
         this.row = row;
@@ -20,7 +20,7 @@ public class GridPosition {
         int y = grid.rowToY(row);
 
         this.rectangle = new Rectangle(x, y,grid.getCellSize(),grid.getCellSize());
-        show();
+        erase();
     }
 
     public int getCol() {
@@ -31,7 +31,7 @@ public class GridPosition {
         return row;
     }
 
-    public GridPosition(Grid grid, int col, int row, boolean p) {
+    GridPosition(Grid grid, int col, int row, boolean p) {
         this.grid = grid;
         this.col = col;
         this.row = row;
@@ -40,13 +40,13 @@ public class GridPosition {
         int y = grid.rowToY(row);
 
         this.rectangle = new Rectangle(x, y,grid.getCellSize(),grid.getCellSize());
-        showP();
+        paint();
     }
 
-    public void setPos(int col, int row) {
+    private void setPos(int col, int row) {
         this.col = col;
         this.row = row;
-        showP();
+        paint();
     }
 
     public void moveInDirection(GridDirection direction, int distance) {
@@ -77,7 +77,7 @@ public class GridPosition {
 
     }
 
-    public Grid getGrid() {
+    private Grid getGrid() {
         return grid;
     }
 
@@ -101,7 +101,7 @@ public class GridPosition {
         setPos(getCol() + maxRowsRight, getRow());
     }
 
-    public void show(){
+    public void erase(){
         rectangle.draw();
         painted = false;
     }
@@ -110,7 +110,7 @@ public class GridPosition {
         return painted;
     }
 
-    public void showP(){
+    public void paint(){
         rectangle.fill();
         painted = true;
     }
