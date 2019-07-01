@@ -5,7 +5,7 @@ Draws on a grid with a mouse (keyboard), with the option to save/load the drawin
 
 ## Help
 ```
-Controls:
+Keys:
 
 s         Saves the drawing to a file
 l         Loads the drawing from a file
